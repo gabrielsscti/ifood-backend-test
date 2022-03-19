@@ -1,4 +1,4 @@
-package track_manager
+package weather
 
 import "strconv"
 
@@ -16,5 +16,5 @@ type CoordinateLocation struct {
 }
 
 func (c *CoordinateLocation) GETParameter() string {
-	return "lat=" + strconv.FormatFloat(c.x, 'E', -1, 64) + "&lon=" + strconv.FormatFloat(c.y, 'E', -1, 64)
+	return "lat=" + strconv.FormatFloat(c.x, 'f', -1, 64) + "&lon=" + strconv.FormatFloat(c.y, 'f', -1, 64)
 }

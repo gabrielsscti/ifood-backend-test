@@ -1,4 +1,4 @@
-package handlers
+package clients
 
 type FetchStatus int
 
@@ -8,11 +8,11 @@ const (
 	ErrorNotFound
 )
 
-type HandlerErr struct {
+type ClientErr struct {
 	Status  FetchStatus
 	Message string
 }
 
-func (s HandlerErr) Error() string {
+func (s ClientErr) Error() string {
 	return s.Message
 }

@@ -1,24 +1,24 @@
 package track_manager
 
 import (
-	"github.com/gabrielsscti/ifood-backend-test/pkg/handlers"
-	"github.com/gabrielsscti/ifood-backend-test/pkg/handlers/tracks"
-	"github.com/gabrielsscti/ifood-backend-test/pkg/handlers/weather"
+	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/tracks"
+	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/weather"
+	"github.com/gabrielsscti/ifood-backend-test/pkg/parameterizable"
 )
 
 type TrackManager struct {
-	TracksHandler  tracks.Handler
-	WeatherHandler weather.Handler
+	TracksClient  tracks.TrackClient
+	WeatherClient weather.WeatherClient
 }
 
-func (t *TrackManager) GetPlaylist(location handlers.GETParameterizable) ([]string, error) {
-	temperature, err := t.WeatherHandler.FetchTemperature(location)
+func (t *TrackManager) GetPlaylist(location parameterizable.GETParameterizable) ([]string, error) {
+	temperature, err := t.WeatherClient.FetchTemperature(location)
 	if err != nil {
 		return nil, err
 	}
 
 	musicType := temperatureToMusicType(temperature)
-	reqTracks, err := t.TracksHandler.FetchTracks(musicType)
+	reqTracks, err := t.TracksClient.FetchTracks(musicType)
 
 	if err != nil {
 		return nil, err
