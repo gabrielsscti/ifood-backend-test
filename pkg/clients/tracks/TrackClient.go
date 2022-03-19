@@ -2,7 +2,7 @@ package tracks
 
 type Tracks []string
 
-type Handler interface {
+type TrackClient interface {
 	FetchTracks(musicType MusicType) (Tracks, error)
 }
 
