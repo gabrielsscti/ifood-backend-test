@@ -21,7 +21,7 @@ type weatherReturn struct {
 	Main `json:"main"`
 }
 
-const OpenWeatherURL = "https://api.openweathermap.org/data/2.5/weather?"
+const openWeatherURL = "https://api.openweathermap.org/data/2.5/weather?"
 
 func NewOpenWeatherClient() (o *OpenWeatherClient) {
 	o = &OpenWeatherClient{os.Getenv("OPEN_WEATHER_API_KEY")}
@@ -30,8 +30,8 @@ func NewOpenWeatherClient() (o *OpenWeatherClient) {
 
 func (w *OpenWeatherClient) FetchTemperature(parameterizable parameterizable.GETParameterizable) (float64, error) {
 	client := &http.Client{}
-	urlRequest := OpenWeatherURL + parameterizable.GETParameter() + "&appid=" + w.apiKey
-	println(urlRequest)
+	urlRequest := openWeatherURL + parameterizable.GETParameter() + "&appid=" + w.apiKey
+
 	req, err := http.NewRequest("GET", urlRequest, nil)
 	if err != nil {
 		return 0, err
