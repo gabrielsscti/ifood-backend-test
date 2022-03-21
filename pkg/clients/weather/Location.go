@@ -3,11 +3,11 @@ package weather
 import "strconv"
 
 type CityLocation struct {
-	cityName string
+	CityName string
 }
 
 func (c *CityLocation) GETParameter() string {
-	return "q=" + c.cityName
+	return "q=" + c.CityName
 }
 
 type CoordinateLocation struct {

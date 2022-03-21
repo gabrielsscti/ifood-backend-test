@@ -20,29 +20,29 @@ func (c ClientCredentials) SetAuthorization() (Authorization, error) {
 
 	req, err := http.NewRequest("POST", c.tokenURL, payload)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("in SetAuthorization: %w", err)
 	}
 
 	req.Header.Set("content-type", "application/x-www-form-urlencoded")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("in SetAuthorization: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(resp.Status)
+		return nil, fmt.Errorf("in SetAuthorization: %w", errors.New(resp.Status))
 	}
 	defer resp.Body.Close()
 
 	byteValue, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("in SetAuthorization: %w", err)
 	}
 
 	var accessToken AccessToken
 	err = json.Unmarshal(byteValue, &accessToken)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("in SetAuthorization: %w", err)
 	}
 
 	return accessToken, nil

@@ -1,6 +1,7 @@
 package track_manager
 
 import (
+	"fmt"
 	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/tracks"
 	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/weather"
 	"github.com/gabrielsscti/ifood-backend-test/pkg/parameterizable"
@@ -14,14 +15,14 @@ type TrackManager struct {
 func (t *TrackManager) GetPlaylist(location parameterizable.GETParameterizable) ([]string, error) {
 	temperature, err := t.WeatherClient.FetchTemperature(location)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("in GetPlaylist: %w", err)
 	}
 
 	musicType := temperatureToMusicType(temperature)
 	reqTracks, err := t.TracksClient.FetchTracks(musicType)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("in GetPlaylist: %w", err)
 	}
 	return reqTracks, err
 }
