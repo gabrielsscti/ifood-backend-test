@@ -2,6 +2,7 @@ package weather
 
 import (
 	"github.com/gabrielsscti/ifood-backend-test/pkg/clients"
+	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/authorization"
 	"os"
 	"testing"
 )
@@ -10,7 +11,7 @@ var openWeatherClient WeatherClient
 
 func TestMain(t *testing.M) {
 	clients.TryLoadEnvironmentFile()
-	openWeatherClient = NewOpenWeatherClient()
+	openWeatherClient = NewOpenWeatherClient(authorization.ApiKey{ApiKey: os.Getenv("OPEN_WEATHER_API_KEY")})
 	os.Exit(t.Run())
 }
 

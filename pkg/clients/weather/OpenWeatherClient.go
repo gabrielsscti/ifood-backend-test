@@ -2,15 +2,15 @@ package weather
 
 import (
 	"encoding/json"
-	"github.com/gabrielsscti/ifood-backend-test/pkg/clients"
+	"fmt"
+	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/authorization"
 	"github.com/gabrielsscti/ifood-backend-test/pkg/parameterizable"
 	"io/ioutil"
 	"net/http"
-	"os"
 )
 
 type OpenWeatherClient struct {
-	apiKey string
+	authorization.Authorization
 }
 
 type Main struct {
@@ -23,26 +23,27 @@ type weatherReturn struct {
 
 const openWeatherURL = "https://api.openweathermap.org/data/2.5/weather?"
 
-func NewOpenWeatherClient() (o *OpenWeatherClient) {
-	o = &OpenWeatherClient{os.Getenv("OPEN_WEATHER_API_KEY")}
+func NewOpenWeatherClient(auth authorization.Authorization) (o *OpenWeatherClient) {
+	o = &OpenWeatherClient{auth}
 	return o
 }
 
 func (w *OpenWeatherClient) FetchTemperature(parameterizable parameterizable.GETParameterizable) (float64, error) {
 	client := &http.Client{}
-	urlRequest := openWeatherURL + parameterizable.GETParameter() + "&appid=" + w.apiKey
+	urlRequest := openWeatherURL + parameterizable.GETParameter()
 
 	req, err := http.NewRequest("GET", urlRequest, nil)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("in FetchTemperature: %w", err)
 	}
+	w.Authorization.Authorize(req)
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("in FetchTemperature: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return 0, clients.ClientErr{Status: clients.ErrorFetching, Message: "Error while fetching, got " + resp.Status}
+		return 0, fmt.Errorf("in FetchTemperature: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -50,7 +51,7 @@ func (w *OpenWeatherClient) FetchTemperature(parameterizable parameterizable.GET
 	var ret weatherReturn
 	err = json.Unmarshal(byteValue, &ret)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("in FetchTemperature: %w", err)
 	}
 
 	return KelvinToCelsius(ret.Temperature), nil

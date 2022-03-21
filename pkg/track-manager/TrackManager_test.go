@@ -2,14 +2,15 @@ package track_manager
 
 import (
 	"github.com/gabrielsscti/ifood-backend-test/pkg/clients"
+	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/authorization"
 	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/tracks"
 	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/weather"
 	"github.com/gabrielsscti/ifood-backend-test/pkg/parameterizable"
+	"github.com/stretchr/testify/assert"
+	"os"
 	"reflect"
 	"testing"
 )
-
-var trackManager TrackManager
 
 type TableTest struct {
 	name          string
@@ -41,6 +42,23 @@ func testTableTest(data []TableTest, t *testing.T) {
 	}
 }
 
+func TestGetPlaylistIntegrationSpotify(t *testing.T) {
+	const spotifyTokenURL = "https://accounts.spotify.com/api/token"
+	clients.TryLoadEnvironmentFile()
+	trackClient := tracks.NewSpotifyTrackClient(authorization.NewClientCredentials(os.Getenv("SPOTIFY_CLIENT_ID"), os.Getenv("SPOTIFY_CLIENT_SECRET"), spotifyTokenURL))
+	weatherClient := weather.NewOpenWeatherClient(authorization.ApiKey{ApiKey: os.Getenv("OPEN_WEATHER_API_KEY")})
+	trackManager := TrackManager{
+		TracksClient:  trackClient,
+		WeatherClient: weatherClient,
+	}
+	_tracks, err := trackManager.GetPlaylist(&weather.CityLocation{CityName: "São Luís"})
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	assert.NotNil(t, _tracks)
+	assert.Greater(t, len(_tracks), 0)
+}
+
 func TestGetPlaylist(t *testing.T) {
 	trackClient := ValidTrackClientStub{}
 	invalidTrackClient := InvalidTrackClientStub{}
@@ -54,7 +72,7 @@ func TestGetPlaylist(t *testing.T) {
 		{"pop_playlist", &trackClient, &validWeather27, tracks.Tracks{"pop1", "pop2", "pop3"}, ""},
 		{"rock_playlist", &trackClient, &validWeather13, tracks.Tracks{"rock1", "rock2", "rock3"}, ""},
 		{"classical_playlist", &trackClient, &validWeather9, tracks.Tracks{"classical1", "classical2", "classical3"}, ""},
-		{"invalid_playlist", &invalidTrackClient, &validWeather9, nil, "invalid kind of music type"},
+		{"invalid_playlist", &invalidTrackClient, &validWeather9, nil, "in GetPlaylist: in GetPlaylist: invalid kind of music type"},
 	}
 
 	testTableTest(data, t)
@@ -68,11 +86,11 @@ func TestGetPlaylistError(t *testing.T) {
 
 	data := []TableTest{
 		{"valid_trackClient_invalid_weatherClient", &validTrackClient,
-			&invalidWeatherClientAuth, nil, "invalid authentication"},
+			&invalidWeatherClientAuth, nil, "in GetPlaylist: in GetPlaylist: invalid authentication"},
 		{"invalid_trackClient_valid_weatherClient", &invalidTrackClientAuth,
-			&validWeatherClient, nil, "invalid authentication"},
+			&validWeatherClient, nil, "in GetPlaylist: in GetPlaylist: invalid authentication"},
 		{"both_invalid", &invalidTrackClientAuth, &invalidWeatherClientAuth,
-			nil, "invalid authentication"},
+			nil, "in GetPlaylist: in GetPlaylist: invalid authentication"},
 	}
 
 	testTableTest(data, t)
@@ -100,7 +118,7 @@ func (h *ValidTrackClientStub) FetchTracks(musicType tracks.MusicType) (tracks.T
 	default:
 		return nil, tracks.TrackErr{
 			Status:  tracks.ErrorInvalidType,
-			Message: "invalid kind of music type",
+			Message: "in GetPlaylist: invalid kind of music type",
 		}
 	}
 }
@@ -110,7 +128,7 @@ type InvalidTrackClientStub struct{}
 func (h *InvalidTrackClientStub) FetchTracks(musicType tracks.MusicType) (tracks.Tracks, error) {
 	return nil, tracks.TrackErr{
 		Status:  tracks.ErrorInvalidType,
-		Message: "invalid kind of music type"}
+		Message: "in GetPlaylist: invalid kind of music type"}
 }
 
 type AuthErrorTrackClientStub struct{}
@@ -118,7 +136,7 @@ type AuthErrorTrackClientStub struct{}
 func (h *AuthErrorTrackClientStub) FetchTracks(musicType tracks.MusicType) (tracks.Tracks, error) {
 	return nil, clients.ClientErr{
 		Status:  clients.ErrorAuthentication,
-		Message: "invalid authentication",
+		Message: "in GetPlaylist: invalid authentication",
 	}
 }
 
@@ -151,6 +169,6 @@ type AuthErrorWeatherStub struct{}
 func (v *AuthErrorWeatherStub) FetchTemperature(parameterizable parameterizable.GETParameterizable) (float64, error) {
 	return 0, clients.ClientErr{
 		Status:  clients.ErrorAuthentication,
-		Message: "invalid authentication",
+		Message: "in GetPlaylist: invalid authentication",
 	}
 }
