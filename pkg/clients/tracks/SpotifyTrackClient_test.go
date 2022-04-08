@@ -11,11 +11,9 @@ import (
 
 var spotifyTrackClient TrackClient
 
-const spotifyTokenURL = "https://accounts.spotify.com/api/token"
-
 func TestMain(t *testing.M) {
 	clients.TryLoadEnvironmentFile()
-	spotifyTrackClient = NewSpotifyTrackClient(authorization.NewClientCredentials(os.Getenv("SPOTIFY_CLIENT_ID"), os.Getenv("SPOTIFY_CLIENT_SECRET"), spotifyTokenURL))
+	spotifyTrackClient = NewSpotifyTrackClient(authorization.NewClientCredentials(os.Getenv("SPOTIFY_CLIENT_ID"), os.Getenv("SPOTIFY_CLIENT_SECRET"), SpotifyTokenURL))
 	os.Exit(t.Run())
 }
 

@@ -3,6 +3,7 @@ package weather
 import (
 	"github.com/gabrielsscti/ifood-backend-test/pkg/clients"
 	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/authorization"
+	"github.com/gabrielsscti/ifood-backend-test/pkg/server/models"
 	"os"
 	"testing"
 )
@@ -16,7 +17,7 @@ func TestMain(t *testing.M) {
 }
 
 func TestFetchTemperatureByCity(t *testing.T) {
-	_, err := openWeatherClient.FetchTemperature(&CityLocation{"São Luís"})
+	_, err := openWeatherClient.FetchTemperature(&models.CityLocation{"São Luís"})
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -24,7 +25,7 @@ func TestFetchTemperatureByCity(t *testing.T) {
 }
 
 func TestFetchTemperatureByCoordinate(t *testing.T) {
-	_, err := openWeatherClient.FetchTemperature(&CoordinateLocation{-29.948600, 51.100500})
+	_, err := openWeatherClient.FetchTemperature(&models.CoordinateLocation{-29.948600, 51.100500})
 
 	if err != nil {
 		t.Errorf(err.Error())

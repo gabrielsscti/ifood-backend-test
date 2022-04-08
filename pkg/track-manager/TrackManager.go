@@ -12,7 +12,16 @@ type TrackManager struct {
 	WeatherClient weather.WeatherClient
 }
 
-func (t *TrackManager) GetPlaylist(location parameterizable.GETParameterizable) ([]string, error) {
+type TrackResponse struct {
+	MusicType string   `json:"MusicType"`
+	Tracks    []string `json:"Tracks"`
+}
+
+func CreateTrackManager(trackClient tracks.TrackClient, weatherClient weather.WeatherClient) *TrackManager {
+	return &TrackManager{trackClient, weatherClient}
+}
+
+func (t *TrackManager) GetPlaylist(location parameterizable.GETParameterizable) (*TrackResponse, error) {
 	temperature, err := t.WeatherClient.FetchTemperature(location)
 	if err != nil {
 		return nil, fmt.Errorf("in GetPlaylist: %w", err)
@@ -24,7 +33,7 @@ func (t *TrackManager) GetPlaylist(location parameterizable.GETParameterizable) 
 	if err != nil {
 		return nil, fmt.Errorf("in GetPlaylist: %w", err)
 	}
-	return reqTracks, err
+	return &TrackResponse{MusicType: musicType.String(), Tracks: reqTracks}, err
 }
 
 func temperatureToMusicType(temperature float64) tracks.MusicType {

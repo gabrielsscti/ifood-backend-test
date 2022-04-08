@@ -1,9 +1,9 @@
-package weather
+package models
 
 import "strconv"
 
 type CityLocation struct {
-	CityName string
+	CityName string `json:"name"`
 }
 
 func (c *CityLocation) GETParameter() string {
@@ -11,10 +11,10 @@ func (c *CityLocation) GETParameter() string {
 }
 
 type CoordinateLocation struct {
-	x float64
-	y float64
+	X float64 `json:"X"`
+	Y float64 `json:"Y"`
 }
 
 func (c *CoordinateLocation) GETParameter() string {
-	return "lat=" + strconv.FormatFloat(c.x, 'f', -1, 64) + "&lon=" + strconv.FormatFloat(c.y, 'f', -1, 64)
+	return "lat=" + strconv.FormatFloat(c.X, 'f', -1, 64) + "&lon=" + strconv.FormatFloat(c.Y, 'f', -1, 64)
 }
