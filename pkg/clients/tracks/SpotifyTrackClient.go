@@ -38,6 +38,8 @@ const categoryWildcard = "@CategoryID"
 const spotifyPlaylistURL = "https://api.spotify.com/v1/playlists/@PlaylistID"
 const playlistWildcard = "@PlaylistID"
 
+const SpotifyTokenURL = "https://accounts.spotify.com/api/token"
+
 func NewSpotifyTrackClient(authorizer authorization.Authorizer) SpotifyTrackClient {
 	return SpotifyTrackClient{authorizer}
 }

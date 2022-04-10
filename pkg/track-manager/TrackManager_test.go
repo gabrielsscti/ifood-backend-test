@@ -6,6 +6,7 @@ import (
 	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/tracks"
 	"github.com/gabrielsscti/ifood-backend-test/pkg/clients/weather"
 	"github.com/gabrielsscti/ifood-backend-test/pkg/parameterizable"
+	"github.com/gabrielsscti/ifood-backend-test/pkg/server/models"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"reflect"
@@ -27,8 +28,12 @@ func testTableTest(data []TableTest, t *testing.T) {
 				TracksClient:  d.trackClient,
 				WeatherClient: d.weatherClient,
 			}
+			var tracks []string
 			result, err := trackManager.GetPlaylist(ParameterizableMock{})
-			if !reflect.DeepEqual(result, []string(d.expected)) {
+			if result != nil {
+				tracks = result.Tracks
+			}
+			if !reflect.DeepEqual(tracks, []string(d.expected)) {
 				t.Errorf("Expected `%s`, got `%s`", d.expected, result)
 			}
 			var errMsg string
@@ -51,12 +56,12 @@ func TestGetPlaylistIntegrationSpotify(t *testing.T) {
 		TracksClient:  trackClient,
 		WeatherClient: weatherClient,
 	}
-	_tracks, err := trackManager.GetPlaylist(&weather.CityLocation{CityName: "São Luís"})
+	_tracks, err := trackManager.GetPlaylist(&models.CityLocation{CityName: "São Luís"})
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	assert.NotNil(t, _tracks)
-	assert.Greater(t, len(_tracks), 0)
+	assert.NotNil(t, _tracks.Tracks)
+	assert.Greater(t, len(_tracks.Tracks), 0)
 }
 
 func TestGetPlaylist(t *testing.T) {
